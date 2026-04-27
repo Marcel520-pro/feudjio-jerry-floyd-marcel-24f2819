@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CamGame Pulse – Merci !</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    @keyframes popIn {
+      0%   { transform: scale(0.5); opacity: 0; }
+      80%  { transform: scale(1.1); }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    .score-badge { animation: popIn 0.6s cubic-bezier(.34,1.56,.64,1) both; animation-delay: 0.3s; opacity: 0; }
+
+    .confetti-bar {
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--green), var(--accent));
+      background-size: 200%;
+      animation: shimmer 2s linear infinite;
+    }
+    @keyframes shimmer { to { background-position: 200%; } }
+
+    .share-links {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+    .share-links a {
+      padding: 0.7rem 1.4rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-family: var(--font-mono);
+      transition: all 0.2s;
+    }
+    .share-links a:hover { border-color: var(--accent); color: var(--accent); }
+  </style>
+</head>
+<body>
+
+<div class="confetti-bar"></div>
+
+<nav>
+  <div class="nav-logo">Cam<span>Game</span> Pulse</div>
+  <div class="nav-links">
+    <a href="/dashboard">Voir les résultats</a>
+    <a href="/">Nouvelle réponse</a>
+  </div>
+</nav>
+
+<div class="merci-container">
+  <div class="score-badge">
+    <div class="score-num">{{ score }}</div>
+    <div class="score-max">/ 3 résilience</div>
+  </div>
+
+  <div class="hero-badge"><i class="bi bi-balloon-fill"></i> Réponse enregistrée</div>
+
+  <h2>{{ titre|safe }}</h2>
+
+  <p class="diagnostic">{{ texte|safe }}</p>
+
+  <p style="font-size:0.82rem; color:var(--text-dim); font-family:var(--font-mono); line-height:1.8;">
+    Merci d'avoir participé à l'enquête <strong style="color:var(--text)">CamGame Pulse</strong>.
+    Tes réponses alimentent une étude sur l'écosystème du jeu vidéo camerounais.
+    Les résultats agrégés et anonymisés seront partagés avec la communauté.
+  </p>
+
+  <div class="share-links">
+    <a href="/dashboard"><i class="bi bi-bar-chart-fill"></i> Voir le dashboard</a>
+    <a href="/"><i class="bi bi-pencil-square"></i> Répondre à nouveau</a>
+    <a href="/export"><i class="bi bi-download"></i> Télécharger les données</a>
+  </div>
+</div>
+
+</body>
+</html>

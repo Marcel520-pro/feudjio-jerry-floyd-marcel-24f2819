@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CamGame Pulse – Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    .dash-header {
+      max-width: 1100px; margin: 0 auto;
+      padding: 3rem 2rem 1.5rem;
+    }
+    .dash-header h1 {
+      font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em;
+    }
+    .dash-header p {
+      color: var(--text-dim); font-family: var(--font-mono);
+      font-size: 0.82rem; margin-top: 0.4rem;
+    }
+
+    .kpi-row {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      max-width: 1100px; margin: 0 auto 1.5rem;
+      padding: 0 2rem;
+    }
+    .kpi {
+      flex: 1; min-width: 160px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.5rem;
+      position: relative; overflow: hidden;
+    }
+    .kpi::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .kpi-val {
+      font-size: 2.2rem; font-weight: 800;
+      color: var(--accent); letter-spacing: -0.04em;
+    }
+    .kpi-label { font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-mono); }
+
+    canvas { max-height: 280px; }
+
+    .themes-cloud {
+      display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0.5rem 0;
+    }
+    .theme-tag {
+      background: rgba(245,166,35,0.1);
+      border: 1px solid rgba(245,166,35,0.25);
+      color: var(--accent);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      padding: 0.3rem 0.7rem;
+      border-radius: 999px;
+    }
+
+    .export-section {
+      max-width: 1100px; margin: 2rem auto;
+      padding: 0 2rem 3rem;
+      text-align: right;
+    }
+
+    .empty-state {
+      text-align: center; padding: 3rem;
+      color: var(--text-dim); font-family: var(--font-mono); font-size: 0.85rem;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Cam<span>Game</span> Pulse</div>
+  <div class="nav-links">
+    <a href="/">Formulaire</a>
+    <a href="/export">Export CSV</a>
+  </div>
+</nav>
+
+<div class="dash-header">
+  <div class="hero-badge"><i class="bi bi-bar-chart-fill"></i> Résultats en temps réel</div>
+  <h1>Dashboard <span style="color:var(--accent)">CamGame</span></h1>
+  <p>Données agrégées et anonymisées des répondants</p>
+</div>
+
+<div class="kpi-row">
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="kpi-val">{{ total }}</div>
+    <div class="kpi-label">Répondants</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-val">{{ score_moy }}</div>
+    <div class="kpi-label">Score résilience moyen / 3</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-val" id="topVille">–</div>
+    <div class="kpi-label">Ville la plus représentée</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-val" id="topFrein">–</div>
+    <div class="kpi-label">Frein le plus bloquant</div>
+  </div>
+</div>
+
+{% if total == 0 %}
+<div class="empty-state">
+  Aucune donnée encore. <a href="/" style="color:var(--accent)">Sois le premier à répondre →</a>
+</div>
+{% else %}
+
+<div class="dashboard-grid">
+  <div class="chart-card">
+    <div class="chart-title"><i class="bi bi-geo-alt-fill"></i> Répondants par ville</div>
+    <canvas id="chartVilles"></canvas>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title"><i class="bi bi-cone-striped"></i> Score moyen des freins</div>
+    <canvas id="chartFreins"></canvas>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title"><i class="bi bi-controller"></i> Moteurs de jeu connus</div>
+    <canvas id="chartMoteurs"></canvas>
+  </div>
+
+  <div class="chart-card">
+    <div class="chart-title"><i class="bi bi-lightning-fill"></i> Distribution résilience</div>
+    <canvas id="chartResilience"></canvas>
+  </div>
+
+  <div class="chart-card" style="grid-column: 1 / -1;">
+    <div class="chart-title"><i class="bi bi-chat-dots-fill"></i> Thèmes de jeux rêvés</div>
+    <div class="themes-cloud" id="themesCloud"></div>
+  </div>
+</div>
+
+{% endif %}
+
+<div class="export-section">
+  <a href="/export" class="btn btn-secondary"><i class="bi bi-download"></i> Télécharger CSV complet</a>
+</div>
+
+<script>
+const villesData  = {{ villes|safe }};
+const freinsData  = {{ freins|safe }};
+const moteursData = {{ moteurs|safe }};
+const themes      = {{ themes|safe }};
+
+const CHART_DEFAULTS = {
+  color: '#e8e8f0',
+  plugins: { legend: { labels: { color: '#7070a0', font: { family: 'Space Mono', size: 11 } } } },
+  scales: {
+    x: { ticks: { color: '#7070a0', font: { family: 'Space Mono', size: 10 } }, grid: { color: '#2a2a3f' } },
+    y: { ticks: { color: '#7070a0', font: { family: 'Space Mono', size: 10 } }, grid: { color: '#2a2a3f' } },
+  }
+};
+
+// Top ville KPI
+const villesEntries = Object.entries(villesData).sort((a,b) => b[1]-a[1]);
+if (villesEntries.length) document.getElementById('topVille').textContent = villesEntries[0][0];
+
+// Top frein KPI
+const freinsEntries = Object.entries(freinsData).sort((a,b) => b[1]-a[1]);
+if (freinsEntries.length) document.getElementById('topFrein').textContent = freinsEntries[0][0];
+
+// Chart Villes (horizontal bar)
+if (Object.keys(villesData).length) {
+  new Chart(document.getElementById('chartVilles'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(villesData),
+      datasets: [{ data: Object.values(villesData), backgroundColor: '#f5a623cc', borderRadius: 6 }]
+    },
+    options: { ...CHART_DEFAULTS, indexAxis: 'y', plugins: { legend: { display: false } } }
+  });
+}
+
+// Chart Freins (radar)
+if (Object.keys(freinsData).length) {
+  new Chart(document.getElementById('chartFreins'), {
+    type: 'radar',
+    data: {
+      labels: Object.keys(freinsData),
+      datasets: [{
+        data: Object.values(freinsData),
+        backgroundColor: 'rgba(232,67,147,0.15)',
+        borderColor: '#e84393',
+        pointBackgroundColor: '#e84393',
+        pointRadius: 4,
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        r: {
+          min: 0, max: 5,
+          ticks: { color: '#7070a0', stepSize: 1, font: { family: 'Space Mono', size: 10 } },
+          grid: { color: '#2a2a3f' },
+          pointLabels: { color: '#e8e8f0', font: { family: 'Space Mono', size: 10 } }
+        }
+      }
+    }
+  });
+}
+
+// Chart Moteurs (doughnut)
+if (Object.keys(moteursData).length) {
+  const colors = ['#f5a623','#e84393','#00e676','#00b8ff','#ff5722','#9c27b0','#4caf50','#ff9800','#2196f3'];
+  new Chart(document.getElementById('chartMoteurs'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(moteursData),
+      datasets: [{ data: Object.values(moteursData), backgroundColor: colors, borderWidth: 0, hoverOffset: 8 }]
+    },
+    options: {
+      plugins: { legend: { labels: { color: '#7070a0', font: { family: 'Space Mono', size: 10 } } } },
+      cutout: '55%'
+    }
+  });
+}
+
+// Chart Résilience placeholder (bar 0-3)
+new Chart(document.getElementById('chartResilience'), {
+  type: 'bar',
+  data: {
+    labels: ['0 – Résistant', '1 – Hackeur', '2 – Pionnier', '3 – Légende'],
+    datasets: [{ data: [0, 0, 0, 0], backgroundColor: ['#444', '#f5a623aa', '#f5a623cc', '#f5a623'], borderRadius: 6 }]
+  },
+  options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } } }
+});
+
+// Thèmes cloud
+const cloud = document.getElementById('themesCloud');
+if (cloud) {
+  themes.forEach(t => {
+    if (!t) return;
+    const tag = document.createElement('span');
+    tag.className = 'theme-tag';
+    tag.textContent = t.length > 60 ? t.slice(0, 57) + '…' : t;
+    cloud.appendChild(tag);
+  });
+  if (!themes.length) cloud.innerHTML = '<span style="color:var(--text-dim);font-family:var(--font-mono);font-size:0.82rem">Aucun thème renseigné pour l\'instant.</span>';
+}
+</script>
+</body>
+</html>
