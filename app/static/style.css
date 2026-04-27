@@ -1,15 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap');
 
 :root {
-  --bg: #0a0a0f;
-  --surface: #111118;
-  --surface2: #1a1a25;
-  --border: #2a2a3f;
-  --accent: #f5a623;
-  --accent2: #e84393;
-  --green: #00e676;
-  --text: #e8e8f0;
-  --text-dim: #7070a0;
+  --bg: #05051a;
+  --surface: #0a0b26;
+  --surface2: #101235;
+  --border: rgba(252, 251, 247, 0.2);
+  --accent: #d500ff;
+  --accent2: #00e5ff;
+  --green: #39ff14;
+  --text: #fcfbf7;
+  --text-dim: #d1d0c9;
   --radius: 12px;
   --font-head: 'Syne', sans-serif;
   --font-mono: 'Space Mono', monospace;
@@ -41,7 +41,7 @@ nav {
   padding: 1.2rem 2rem;
   border-bottom: 1px solid var(--border);
   position: sticky; top: 0; z-index: 100;
-  background: rgba(10,10,15,0.92);
+  background: rgba(5,5,26,0.92);
   backdrop-filter: blur(16px);
 }
 
@@ -67,8 +67,8 @@ nav {
 
 .hero-badge {
   display: inline-block;
-  background: rgba(245,166,35,0.12);
-  border: 1px solid rgba(245,166,35,0.3);
+  background: rgba(213,0,255,0.12);
+  border: 1px solid rgba(213,0,255,0.3);
   color: var(--accent);
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -164,7 +164,7 @@ select, input[type="text"], textarea {
 select:focus, input[type="text"]:focus, textarea:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(245,166,35,0.1);
+  box-shadow: 0 0 0 3px rgba(213,0,255,0.1);
 }
 
 textarea { resize: vertical; min-height: 80px; }
@@ -197,7 +197,7 @@ input[type="range"]::-webkit-slider-thumb {
   width: 18px; height: 18px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 12px rgba(245,166,35,0.5);
+  box-shadow: 0 0 12px rgba(213,0,255,0.5);
   cursor: pointer;
   transition: transform 0.15s;
 }
@@ -221,8 +221,8 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   font-size: 0.85rem;
 }
 .check-item:hover {
-  border-color: rgba(245,166,35,0.4);
-  background: rgba(245,166,35,0.05);
+  border-color: rgba(213,0,255,0.4);
+  background: rgba(213,0,255,0.05);
 }
 .check-item input[type="checkbox"] {
   accent-color: var(--accent);
@@ -243,13 +243,13 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--accent), #e8a020);
+  background: linear-gradient(135deg, var(--accent), #aa00ff);
   color: #000;
-  box-shadow: 0 4px 20px rgba(245,166,35,0.3);
+  box-shadow: 0 4px 20px rgba(213,0,255,0.3);
 }
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(245,166,35,0.4);
+  box-shadow: 0 8px 30px rgba(213,0,255,0.4);
 }
 
 .btn-secondary {
@@ -323,7 +323,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   align-items: center; justify-content: center;
   margin: 0 auto 2rem;
   border: 3px solid var(--accent);
-  background: radial-gradient(circle, rgba(245,166,35,0.1), transparent);
+  background: radial-gradient(circle, rgba(213,0,255,0.1), transparent);
 }
 .score-num {
   font-size: 3rem; font-weight: 800;

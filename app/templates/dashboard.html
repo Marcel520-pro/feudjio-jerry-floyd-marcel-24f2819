@@ -49,8 +49,8 @@
       display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0.5rem 0;
     }
     .theme-tag {
-      background: rgba(245,166,35,0.1);
-      border: 1px solid rgba(245,166,35,0.25);
+      background: rgba(213,0,255,0.1);
+      border: 1px solid rgba(213,0,255,0.25);
       color: var(--accent);
       font-family: var(--font-mono);
       font-size: 0.78rem;
@@ -174,7 +174,7 @@ if (Object.keys(villesData).length) {
     type: 'bar',
     data: {
       labels: Object.keys(villesData),
-      datasets: [{ data: Object.values(villesData), backgroundColor: '#f5a623cc', borderRadius: 6 }]
+      datasets: [{ data: Object.values(villesData), backgroundColor: 'rgba(213,0,255,0.8)', borderRadius: 6 }]
     },
     options: { ...CHART_DEFAULTS, indexAxis: 'y', plugins: { legend: { display: false } } }
   });
@@ -188,9 +188,9 @@ if (Object.keys(freinsData).length) {
       labels: Object.keys(freinsData),
       datasets: [{
         data: Object.values(freinsData),
-        backgroundColor: 'rgba(232,67,147,0.15)',
-        borderColor: '#e84393',
-        pointBackgroundColor: '#e84393',
+        backgroundColor: 'rgba(0,229,255,0.15)',
+        borderColor: '#00e5ff',
+        pointBackgroundColor: '#00e5ff',
         pointRadius: 4,
       }]
     },
@@ -210,7 +210,7 @@ if (Object.keys(freinsData).length) {
 
 // Chart Moteurs (doughnut)
 if (Object.keys(moteursData).length) {
-  const colors = ['#f5a623','#e84393','#00e676','#00b8ff','#ff5722','#9c27b0','#4caf50','#ff9800','#2196f3'];
+  const colors = ['#d500ff','#00e5ff','#39ff14','#ff0055','#00ffaa','#ffb700','#7000ff','#ff00d4','#0055ff'];
   new Chart(document.getElementById('chartMoteurs'), {
     type: 'doughnut',
     data: {
@@ -229,7 +229,7 @@ new Chart(document.getElementById('chartResilience'), {
   type: 'bar',
   data: {
     labels: ['0 – Résistant', '1 – Hackeur', '2 – Pionnier', '3 – Légende'],
-    datasets: [{ data: [0, 0, 0, 0], backgroundColor: ['#444', '#f5a623aa', '#f5a623cc', '#f5a623'], borderRadius: 6 }]
+    datasets: [{ data: [0, 0, 0, 0], backgroundColor: ['#444', 'rgba(213,0,255,0.6)', 'rgba(213,0,255,0.8)', '#d500ff'], borderRadius: 6 }]
   },
   options: { ...CHART_DEFAULTS, plugins: { legend: { display: false } } }
 });
