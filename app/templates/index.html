@@ -192,10 +192,18 @@
           </div>
         </div>
 
-        <div class="form-group spacer">
+        <div class="form-group" style="padding-top: 1.5rem; padding-bottom: 1.5rem;">
           <label for="theme_reve">Si tu créais le jeu de tes rêves, ça parlerait de quoi ?</label>
-          <textarea name="theme_reve" id="theme_reve" rows="3"
-            placeholder="Ex: Un RPG sur la royauté bamiléké, un jeu de foot dans les rues de Douala…"></textarea>
+          <select name="theme_reve" id="theme_reve" required>
+            <option value="" disabled selected>Sélectionner…</option>
+            <option>Un RPG basé sur nos mythes et légendes</option>
+            <option>Un jeu de sport de rue (foot, basket...)</option>
+            <option>Un jeu d'action/aventure afrofuturiste</option>
+            <option>Un jeu éducatif sur l'histoire locale</option>
+            <option>Un jeu de gestion de ville / royaume</option>
+            <option>Un platformer 2D classique</option>
+            <option>Autre (FPS, etc.)</option>
+          </select>
         </div>
 
         <button type="submit" class="btn btn-primary btn-submit">

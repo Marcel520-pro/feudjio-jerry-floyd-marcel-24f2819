@@ -211,8 +211,11 @@ def dashboard():
     mgs = Minigame.query.all()
     score_moy = round(sum(m.score_resilience or 0 for m in mgs) / (len(mgs) or 1), 1)
 
-    # Thèmes de rêve (nuage de mots simplifié)
-    themes_raw = [r.theme_reve for r in reponses if r.theme_reve]
+    # Thèmes de rêve
+    themes = {}
+    for r in reponses:
+        if r.theme_reve:
+            themes[r.theme_reve] = themes.get(r.theme_reve, 0) + 1
 
     return render_template('dashboard.html',
         total=len(reponses),
@@ -220,7 +223,7 @@ def dashboard():
         freins=json.dumps(freins),
         moteurs=json.dumps(moteurs),
         score_moy=score_moy,
-        themes=json.dumps(themes_raw),
+        themes=json.dumps(themes),
     )
 
 
