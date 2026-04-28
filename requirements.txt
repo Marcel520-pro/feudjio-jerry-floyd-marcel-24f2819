@@ -1,6 +1,4 @@
-cat > requirements.txt << 'EOF'
 Flask
 Flask-SQLAlchemy
 requests
 gunicorn
-EOF
