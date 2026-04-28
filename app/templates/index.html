@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="fr">
 
 <head>
@@ -215,6 +215,640 @@
   </div>
 
   <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CamGame – Enquête</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    /* ══════════════════════════════════
+       INTRO CINÉMATIQUE
+    ══════════════════════════════════ */
+    #intro-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0a0a0f;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      cursor: pointer;
+    }
+
+    #intro-overlay::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px,
+          rgba(0, 0, 0, 0.04) 2px, rgba(0, 0, 0, 0.04) 4px);
+      z-index: 1;
+    }
+
+    .intro-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 0.1s linear;
+      z-index: 2;
+    }
+
+    .intro-slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 3rem;
+      opacity: 0;
+      transition: opacity 0.7s ease;
+      pointer-events: none;
+      text-align: center;
+      z-index: 2;
+    }
+
+    .intro-slide.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .intro-tag {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--accent);
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      border: 1px solid rgba(245, 166, 35, 0.3);
+      background: rgba(245, 166, 35, 0.08);
+      padding: 0.3rem 0.9rem;
+      border-radius: 999px;
+      margin-bottom: 1.8rem;
+    }
+
+    .intro-big {
+      font-family: var(--font-head);
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 1.4rem;
+      max-width: 720px;
+    }
+
+    .intro-text {
+      font-family: var(--font-mono);
+      font-size: clamp(0.78rem, 1.8vw, 0.9rem);
+      color: var(--text-dim);
+      line-height: 2;
+      max-width: 600px;
+    }
+
+    .intro-text strong {
+      color: var(--text);
+    }
+
+    .ia {
+      color: var(--accent);
+    }
+
+    .ia2 {
+      color: var(--accent2);
+    }
+
+    .ig {
+      color: #00e676;
+    }
+
+    @keyframes glitch {
+      0% {
+        clip-path: inset(0 0 96% 0);
+        transform: translate(-3px, 0);
+      }
+
+      15% {
+        clip-path: inset(25% 0 55% 0);
+        transform: translate(3px, 0);
+      }
+
+      30% {
+        clip-path: inset(65% 0 15% 0);
+        transform: translate(-2px, 0);
+      }
+
+      50% {
+        clip-path: inset(45% 0 35% 0);
+        transform: translate(2px, 0);
+      }
+
+      80% {
+        clip-path: inset(10% 0 75% 0);
+        transform: translate(-1px, 0);
+      }
+
+      100% {
+        clip-path: inset(0 0 96% 0);
+        transform: translate(0, 0);
+      }
+    }
+
+    .glitch {
+      position: relative;
+      display: inline-block;
+    }
+
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+    }
+
+    .glitch::before {
+      color: var(--accent2);
+      animation: glitch 2.8s infinite linear alternate-reverse;
+    }
+
+    .glitch::after {
+      color: #00e5ff;
+      animation: glitch 2.1s infinite linear alternate;
+      opacity: 0.7;
+    }
+
+    .intro-btn {
+      margin-top: 2.2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 1rem 2.5rem;
+      background: linear-gradient(135deg, var(--accent), #e8a020);
+      color: #000;
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 1rem;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 4px 24px rgba(245, 166, 35, 0.35);
+      transition: transform 0.15s, box-shadow 0.2s;
+      letter-spacing: 0.02em;
+    }
+
+    .intro-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(245, 166, 35, 0.45);
+    }
+
+    .intro-dots {
+      position: absolute;
+      bottom: 2.2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 0.5rem;
+      z-index: 3;
+    }
+
+    .intro-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: background 0.3s, transform 0.3s;
+    }
+
+    .intro-dot.active {
+      background: var(--accent);
+      transform: scale(1.5);
+    }
+
+    .intro-skip {
+      position: absolute;
+      bottom: 1.9rem;
+      right: 1.8rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid var(--border);
+      background: none;
+      padding: 0.38rem 0.85rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      z-index: 3;
+    }
+
+    .intro-skip:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(22px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .su {
+      animation: slideUp 0.6s ease both;
+    }
+
+    .d1 {
+      animation-delay: 0.15s;
+    }
+
+    .d2 {
+      animation-delay: 0.4s;
+    }
+
+    #main-content {
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    #main-content.revealed {
+      opacity: 1;
+    }
+
+    @media (max-width: 480px) {
+      .intro-slide {
+        padding: 1.5rem 1.2rem;
+      }
+
+      .intro-big {
+        font-size: clamp(1.4rem, 8vw, 2rem);
+      }
+
+      .intro-text {
+        font-size: 0.78rem;
+        line-height: 1.85;
+      }
+
+      .intro-btn {
+        font-size: 0.9rem;
+        padding: 0.9rem 1.8rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════════
+     INTRO CINÉMATIQUE
+══════════════════════════════════════════ -->
+  <div id="intro-overlay">
+    <div class="intro-progress" id="introProgress" style="width:0%"></div>
+
+    <!-- Slide 1 -->
+    <div class="intro-slide visible" id="sl0">
+      <div class="intro-tag su">🌍 Contexte mondial</div>
+      <div class="intro-big su d1">
+        Des milliers de développeurs<br>
+        <span class="ia">créent des mondes entiers.</span>
+      </div>
+      <div class="intro-text su d2">
+        De <strong>Tokyo</strong> à <strong>Stockholm</strong>, de <strong>São Paulo</strong> à <strong>Séoul</strong>
+        —<br>
+        le jeu vidéo est devenu la <span class="ia">1ère industrie culturelle mondiale</span>,<br>
+        pesant plus de <strong>200 milliards de dollars</strong> par an.
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="intro-slide" id="sl1">
+      <div class="intro-tag su">🌱 L'Afrique s'éveille</div>
+      <div class="intro-big su d1">
+        <span class="ig">Nairobi. Lagos. Accra.</span><br>
+        Des studios africains émergent.
+      </div>
+      <div class="intro-text su d2">
+        Des jeux qui racontent <span class="ia">l'Afrique par l'Afrique</span>.<br>
+        Des mythologies ancestrales, des héros locaux, des rues familières — pixelisés.<br>
+        L'écosystème game dev africain <span class="ia">grandit vite.</span><br>
+        Mais une région reste dans l'ombre.
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="intro-slide" id="sl2">
+      <div class="intro-tag su">🇨🇲 Et le Cameroun ?</div>
+      <div class="intro-big su d1">
+        <span class="glitch ia2" data-text="Presque rien.">Presque rien.</span>
+      </div>
+      <div class="intro-text su d2">
+        Pourtant les <strong>talents existent</strong>. Les <strong>idées aussi</strong>.<br>
+        Mais quelque chose bloque — ou plusieurs choses.<br>
+        <span class="ia">Le courant coupe.</span> <span class="ia2">Le matériel manque.</span><br>
+        <span class="ig">La famille ne comprend pas.</span> <span class="ia">Le marché est loin.</span><br><br>
+        <strong>Qui peut vraiment faire du game dev au Cameroun ?</strong>
+      </div>
+    </div>
+
+    <!-- Slide 4 -->
+    <div class="intro-slide" id="sl3">
+      <div class="intro-tag su">🎮 Ta voix compte</div>
+      <div class="intro-big su d1">
+        <span class="ia">Cette enquête</span> est pour toi.
+      </div>
+      <div class="intro-text su d2">
+        5 minutes pour cartographier la réalité du game dev camerounais —<br>
+        ses <span class="ia2">freins</span>, ses <span class="ig">forces</span>, ses <span class="ia">rêves</span>.<br>
+        Chaque réponse compte. Les données sont <strong>anonymes</strong>.<br>
+        Et à la fin — <strong>un mini-jeu t'attend.</strong>
+      </div>
+      <button class="intro-btn" onclick="closeIntro()">
+        <i class="bi bi-controller"></i> Je participe
+      </button>
+    </div>
+
+    <div class="intro-dots">
+      <div class="intro-dot active" id="dot0"></div>
+      <div class="intro-dot" id="dot1"></div>
+      <div class="intro-dot" id="dot2"></div>
+      <div class="intro-dot" id="dot3"></div>
+    </div>
+    <button class="intro-skip" onclick="closeIntro()">Passer ⟶</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+     CONTENU PRINCIPAL
+══════════════════════════════════════════ -->
+  <div id="main-content">
+
+    <nav>
+      <div class="nav-logo">Cam<span>Game</span> Pulse</div>
+      <div class="nav-links">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/export">Export CSV</a>
+      </div>
+    </nav>
+
+    <div class="hero">
+      <div class="hero-badge"><i class="bi bi-controller"></i> Enquête 2024 · Cameroun</div>
+      <h1>Le <span class="hl">Game Dev</span><br>au <span class="hl2">Cameroun</span><br>est-il possible ?</h1>
+      <p>Réponds à cette enquête interactive et découvre ton profil de développeur. Moins de 5 minutes. Résultats
+        anonymisés.</p>
+    </div>
+
+    <div class="form-container">
+      <form id="enquete-form" method="POST" action="/">
+
+        <div class="form-section">
+          <div class="section-title">01 · Ton Profil</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="age">Tranche d'âge</label>
+              <select name="age" id="age" required>
+                <option value="" disabled selected>Sélectionner…</option>
+                <option>Moins de 18 ans</option>
+                <option>18–24 ans</option>
+                <option>25–34 ans</option>
+                <option>35–44 ans</option>
+                <option>45 ans et plus</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="ville">Ville de résidence</label>
+              <select name="ville" id="ville" required>
+                <option value="" disabled selected>Sélectionner…</option>
+                <option>Yaoundé</option>
+                <option>Douala</option>
+                <option>Bafoussam</option>
+                <option>Bamenda</option>
+                <option>Garoua</option>
+                <option>Maroua</option>
+                <option>Ngaoundéré</option>
+                <option>Bertoua</option>
+                <option>Ebolowa</option>
+                <option>Kribi</option>
+                <option>Autre ville</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="statut">Statut actuel</label>
+              <select name="statut" id="statut" required>
+                <option value="" disabled selected>Sélectionner…</option>
+                <option>Étudiant(e)</option>
+                <option>Développeur(se) indépendant(e)</option>
+                <option>Développeur(se) salarié(e)</option>
+                <option>Enseignant(e)</option>
+                <option>Passionné(e) amateur</option>
+                <option>Entrepreneur(se) tech</option>
+                <option>Autre</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="connexion">Qualité de ta connexion internet</label>
+              <select name="connexion" id="connexion" required>
+                <option value="" disabled selected>Sélectionner…</option>
+                <option>Excellente (fibre)</option>
+                <option>Bonne (4G stable)</option>
+                <option>Moyenne (3G/4G variable)</option>
+                <option>Mauvaise (souvent coupée)</option>
+                <option>Je travaille offline principalement</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="section-title">02 · Ta Pratique</div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="tentative_game">As-tu déjà tenté de faire un jeu vidéo ?</label>
+              <select name="tentative_game" id="tentative_game" required>
+                <option value="" disabled selected>Sélectionner…</option>
+                <option>Oui, j'ai un jeu terminé</option>
+                <option>Oui, un projet en cours</option>
+                <option>Oui, j'ai essayé mais abandonné</option>
+                <option>Non, mais j'aimerais</option>
+                <option>Non, pas intéressé(e)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="moteur">Moteur / outil que tu utilises ou connais</label>
+              <select name="moteur" id="moteur" required>
+                <option value="" disabled selected>Sélectionner…</option>
+                <option>Unity</option>
+                <option>Godot</option>
+                <option>Unreal Engine</option>
+                <option>GDevelop</option>
+                <option>GameMaker</option>
+                <option>Pygame (Python)</option>
+                <option>Phaser.js</option>
+                <option>Scratch / outil éducatif</option>
+                <option>Aucun</option>
+                <option>Autre</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="apprentissage">Comment tu as appris / tu apprends ?</label>
+              <select name="apprentissage" id="apprentissage" required>
+                <option value="" disabled selected>Sélectionner…</option>
+                <option>YouTube / vidéos gratuites</option>
+                <option>Formations en ligne payantes</option>
+                <option>Université / école</option>
+                <option>Livres / documentation</option>
+                <option>Communautés / forums</option>
+                <option>Autodidacte pur</option>
+                <option>Mentorat / pair</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="publie">As-tu déjà publié un jeu ?</label>
+              <select name="publie" id="publie" required>
+                <option value="" disabled selected>Sélectionner…</option>
+                <option>Oui, sur Google Play</option>
+                <option>Oui, sur itch.io</option>
+                <option>Oui, sur PC (exe partagé)</option>
+                <option>Non, pas encore</option>
+                <option>Non, je ne sais pas comment</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="section-title">03 · Les Freins (1 = mineur · 5 = bloquant)</div>
+
+          {% set sliders = [
+          ('frein_materiel', 'Matériel insuffisant (PC trop lent, pas de GPU…)'),
+          ('frein_connexion', 'Connexion internet instable ou chère'),
+          ('frein_formation', 'Manque de formations locales en game dev'),
+          ('frein_monetisation', 'Difficulté à monétiser / accéder aux marchés'),
+          ('frein_familial', 'Pression familiale / culturelle contre le gaming'),
+          ] %}
+
+          {% for name, label in sliders %}
+          <div class="slider-group">
+            <div class="slider-label">
+              <span>{{ label }}</span>
+              <span class="slider-value" id="{{ name }}_val">3</span>
+            </div>
+            <input type="range" id="{{ name }}" name="{{ name }}" min="1" max="5" value="3"
+              oninput="document.getElementById('{{ name }}_val').textContent=this.value">
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="form-section">
+          <div class="section-title">04 · Solutions & Rêves</div>
+
+          <div class="form-group">
+            <label>Quelle aide te serait la plus utile ? (plusieurs choix possibles)</label>
+            <div class="check-grid mt1">
+              {% set aides = [
+              'Un espace de coworking tech',
+              'Des formations gratuites',
+              'Un accélérateur / incubateur',
+              'Accès à des PC performants',
+              'Une communauté active locale',
+              'Du financement / bourses',
+              'Des mentors expérimentés',
+              'Des hackathons game dev',
+              ] %}
+              {% for aide in aides %}
+              <label class="check-item">
+                <input type="checkbox" name="aide_souhaitee" value="{{ aide }}">
+                {{ aide }}
+              </label>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="form-group" style="padding-top: 1.5rem; padding-bottom: 1.5rem;">
+            <label for="theme_reve">Si tu créais le jeu de tes rêves, ça parlerait de quoi ?</label>
+            <select name="theme_reve" id="theme_reve" required>
+              <option value="" disabled selected>Sélectionner…</option>
+              <option>Un RPG basé sur nos mythes et légendes</option>
+              <option>Un jeu de sport de rue (foot, basket...)</option>
+              <option>Un jeu d'action/aventure afrofuturiste</option>
+              <option>Un jeu éducatif sur l'histoire locale</option>
+              <option>Un jeu de gestion de ville / royaume</option>
+              <option>Un platformer 2D classique</option>
+              <option>Autre (FPS, etc.)</option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-submit">
+            Soumettre et Jouer au Mini-jeu
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </div><!-- /#main-content -->
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script>
+    const TOTAL = 4;
+    const DURATION = 4200;
+    let cur = 0, timer = null, progressTimer = null, pVal = 0;
+
+    function showSlide(n) {
+      document.querySelectorAll('.intro-slide').forEach((s, i) => s.classList.toggle('visible', i === n));
+      document.querySelectorAll('.intro-dot').forEach((d, i) => d.classList.toggle('active', i === n));
+      cur = n;
+      pVal = 0;
+      document.getElementById('introProgress').style.width = '0%';
+    }
+
+    function startProgress() {
+      clearInterval(progressTimer);
+      pVal = 0;
+      progressTimer = setInterval(() => {
+        pVal += 100 / (DURATION / 50);
+        document.getElementById('introProgress').style.width = Math.min(pVal, 100) + '%';
+      }, 50);
+    }
+
+    function scheduleNext() {
+      clearTimeout(timer);
+      startProgress();
+      if (cur < TOTAL - 1) {
+        timer = setTimeout(() => { showSlide(cur + 1); scheduleNext(); }, DURATION);
+      }
+    }
+
+    function closeIntro() {
+      clearTimeout(timer); clearInterval(progressTimer);
+      const ov = document.getElementById('intro-overlay');
+      const main = document.getElementById('main-content');
+      ov.style.transition = 'opacity 0.75s ease';
+      ov.style.opacity = '0';
+      setTimeout(() => { ov.style.display = 'none'; main.classList.add('revealed'); }, 750);
+    }
+
+    document.getElementById('intro-overlay').addEventListener('click', function (e) {
+      if (e.target.closest('button')) return;
+      clearTimeout(timer);
+      if (cur < TOTAL - 1) { showSlide(cur + 1); scheduleNext(); }
+    });
+
+    scheduleNext();
+  </script>
 </body>
 
 </html>
