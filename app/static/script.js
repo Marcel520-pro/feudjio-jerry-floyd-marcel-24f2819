@@ -1,4 +1,3 @@
-// ── Range slider live update ──────────────────────────────────────────────
 document.querySelectorAll('input[type="range"]').forEach(slider => {
   const display = document.getElementById(slider.id + '_val');
   if (display) {
@@ -7,7 +6,6 @@ document.querySelectorAll('input[type="range"]').forEach(slider => {
   }
 });
 
-// ── Form validation ───────────────────────────────────────────────────────
 const form = document.getElementById('enquete-form');
 if (form) {
   form.addEventListener('submit', e => {
