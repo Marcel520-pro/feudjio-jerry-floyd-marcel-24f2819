@@ -111,7 +111,7 @@ def index():
 
         # Notification Telegram
         msg = (
-            f"<b>Nouvelle reponse CamGame Pulse !</b>\n"
+            f"<b>Nouvelle reponse TP232 !</b>\n"
             f"\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n"
             f"<b>Profil</b>\n"
             f"  - Age : {r.age}\n"

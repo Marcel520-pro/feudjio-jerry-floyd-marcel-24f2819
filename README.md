@@ -1,4 +1,4 @@
-# 🎮 CamGame Pulse
+# 🎮 TP232
 
 **Enquête interactive sur le game development au Cameroun**
 
